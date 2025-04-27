@@ -18,15 +18,33 @@ Nodo *crearNodo(Tarea *tarea);
 void agregarNodo(Nodo **Lista,Nodo *nodo);
 void pedirTareas(Nodo **Lista);
 void mostrarLista(Nodo **Lista);
+void moverNodoTarea(Nodo **Lista,Nodo **ListaRealizadas,int id);
 
 
 int main(){
+    int realizada = 0,seguir = 1;
     Nodo *ListaPendientes = crearListaVacia();
     Nodo *ListaRealizadas = crearListaVacia();
 
     pedirTareas(&ListaPendientes);
     printf("\nLista de tareas pendientes:\n");
     mostrarLista(&ListaPendientes);
+
+    while (ListaPendientes && seguir != 0)
+    {
+        printf("Ingrese el id de la tarea que ya realizo: ");
+        scanf("%i",&realizada);
+
+        moverNodoTarea(&ListaPendientes,&ListaRealizadas,realizada);
+
+        printf("\nLista de tareas Realizadas:\n");
+        mostrarLista(&ListaRealizadas);
+        printf("\nLista de tareas pendientes actualizada:\n");
+        mostrarLista(&ListaPendientes);
+        printf("\nQuiere seguir completando tareas?\n1.Si 0.No");
+        scanf("%i", &seguir);
+    }
+    
 
 }
 
@@ -56,9 +74,9 @@ void pedirTareas(Nodo **Lista)
     {
         Tarea *tareaNueva = (Tarea*) malloc(sizeof(Tarea));
         char *descripcion = (char*)malloc(sizeof(char)*100);
-        
+
         tareaNueva->TareaID = idTarea;
-        idTarea ++;
+        idTarea += 1;
         printf("\nIngrese la descripcion de la tarea: ");
         gets(descripcion);
         tareaNueva->Descripcion = (char*)malloc(sizeof(char)*strlen(descripcion));
@@ -84,8 +102,33 @@ void mostrarLista(Nodo **Lista)
     {
         printf("Tarea: ");
         puts(Aux->Tarea.Descripcion);
-        printf("Id: %i;Duracion: %i;\n",Aux->Tarea.TareaID,Aux->Tarea.Duracion);
+        printf("Id: %i;Duracion: %ihs;\n",Aux->Tarea.TareaID,Aux->Tarea.Duracion);
         Aux = Aux->Siguiente;
+    }
+    
+}
+
+void moverNodoTarea(Nodo **ListaPendientes,Nodo **ListaRealizadas, int id)
+{
+    Nodo *Aux = *ListaPendientes;
+    Nodo *Ant = Aux;
+    while (Aux && Aux->Tarea.TareaID != id)
+    {
+        Ant = Aux;
+        Aux = Aux->Siguiente;
+    }
+
+    if (Aux)
+    {
+        if (Aux == *ListaPendientes)
+        {
+            *ListaPendientes = Aux->Siguiente;
+        }
+        else{
+           Ant->Siguiente = Aux->Siguiente;
+        }
+        Aux->Siguiente = NULL;
+        agregarNodo(ListaRealizadas,Aux);
     }
     
 }
