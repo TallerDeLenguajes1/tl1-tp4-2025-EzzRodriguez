@@ -19,16 +19,20 @@ void agregarNodo(Nodo **Lista,Nodo *nodo);
 void pedirTareas(Nodo **Lista);
 void mostrarLista(Nodo **Lista);
 void moverNodoTarea(Nodo **Lista,Nodo **ListaRealizadas,int id);
-
+void consultarTarea(Nodo **ListaPendientes,Nodo **ListaRealizadas,int id);
 
 int main(){
-    int realizada = 0,seguir = 1;
+    int realizada = 0,seguir = 0, consulta = 0;
     Nodo *ListaPendientes = crearListaVacia();
     Nodo *ListaRealizadas = crearListaVacia();
 
     pedirTareas(&ListaPendientes);
     printf("\nLista de tareas pendientes:\n");
     mostrarLista(&ListaPendientes);
+
+    
+    printf("Desea actualizar tareas realizadas?\n 1.Si 0.No");
+    scanf("%i",&seguir);
 
     while (ListaPendientes && seguir != 0)
     {
@@ -44,7 +48,10 @@ int main(){
         printf("\nQuiere seguir completando tareas?\n1.Si 0.No");
         scanf("%i", &seguir);
     }
-    
+
+    printf("Ingrese el id de la tarea a consultar");
+    scanf("%i",&consulta);
+    consultarTarea(&ListaPendientes,&ListaRealizadas,consulta);
 
 }
 
@@ -129,6 +136,48 @@ void moverNodoTarea(Nodo **ListaPendientes,Nodo **ListaRealizadas, int id)
         }
         Aux->Siguiente = NULL;
         agregarNodo(ListaRealizadas,Aux);
+    }
+    
+}
+
+void consultarTarea(Nodo **ListaPendientes, Nodo **ListaRealizadas, int id)
+{
+    int lista = 0;
+    Nodo *Aux = *ListaPendientes;   
+    while (Aux && Aux->Tarea.TareaID != id)
+    {
+        Aux = Aux->Siguiente;
+    }
+    if (Aux)
+    {
+        lista = 1;
+    }
+    else
+    {
+        Aux = *ListaRealizadas;
+        while (Aux && Aux->Tarea.TareaID != id)
+        {
+            Aux = Aux->Siguiente;
+        }
+        if (Aux)
+        {
+            lista = 2;
+        }
+    }
+    
+    if (Aux)
+    {
+        printf("Tarea: ");
+        puts(Aux->Tarea.Descripcion);
+        printf("Id: %i;Duracion: %ihs;\n",Aux->Tarea.TareaID,Aux->Tarea.Duracion);
+        printf("\nPertenecia a la lista de ");   
+        switch (lista)
+        {
+        case 1:printf("Pendientes");
+            break;
+        case 2:printf("Realizadas");
+            break;
+        }
     }
     
 }
